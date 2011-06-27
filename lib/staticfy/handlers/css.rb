@@ -21,7 +21,38 @@
 module Staticfy
   module Handlers
     class CSS < Base
+      URL_PATTERN = /url\s*\(['"]?(.+?)['"]?\)/
 
+      def fetch_links
+        links = []
+
+        body.scan(URL_PATTERN) do |url|
+          url = url[0]
+          next if url.empty?
+          abs = to_absolute(URI(url))
+
+          if in_domain?(abs)
+            links << abs
+          end
+        end
+
+        links
+      end
+
+      def local_body
+        body.gsub(URL_PATTERN) do |url|
+          parts = url.match(URL_PATTERN)
+          next if url.empty?
+          abs = to_absolute(URI(parts[1]))
+
+          if in_domain?(abs)
+            local = Staticfy::Handlers.local_uri(abs).to_s
+            "url('#{local}')"
+          else
+            url
+          end
+        end
+      end
     end
   end
 end

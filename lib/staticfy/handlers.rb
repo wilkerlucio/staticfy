@@ -30,7 +30,6 @@ module Staticfy
 
       def factory(ext)
         ext_table = {
-          ".js"  => Javascript,
           ".css" => CSS
         }
 

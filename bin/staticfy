@@ -22,10 +22,6 @@
 require 'rubygems'
 require 'staticfy'
 
-path = ARGV[0]
+url = ARGV[0]
 
-def crawl(base_url, options = {}, &block)
-  Staticfy.crawl(base_url, options, &block)
-end
-
-load path
+Staticfy.crawl(url, :output => "output")

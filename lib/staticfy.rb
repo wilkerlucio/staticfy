@@ -22,9 +22,12 @@ require 'anemone'
 require 'staticfy/anemone_hacks'
 
 module Staticfy
+  autoload :Crawler,  "staticfy/crawler"
   autoload :Handlers, "staticfy/handlers"
 
-  def self.crawl
-    # TODO: do crawl work
+  def self.crawl(url, options = {}, &block)
+    crawler = Crawler.new(url, options)
+    block.call(crawler) if block
+    crawler.crawl
   end
 end

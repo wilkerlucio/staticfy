@@ -40,15 +40,5 @@ task :runtest do
   require 'anemone'
   require 'staticfy'
 
-  Anemone.crawl("http://www.disqueagua.com/") do |anemone|
-    anemone.on_every_page do |page|
-      local_path = File.join(File.dirname(__FILE__), "output", page.local_uri)
-
-      File.open(local_path, "wb") do |file|
-        file << page.local_body
-      end
-
-      puts "Saved #{local_path}"
-    end
-  end
+  Staticfy.crawl("http://www.disqueagua.com/", :output => File.expand_path("../output", __FILE__))
 end

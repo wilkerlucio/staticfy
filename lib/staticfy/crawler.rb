@@ -24,12 +24,13 @@ module Staticfy
 
     def initialize(url, options = {})
       @url = url
+      @options = options
     end
 
     def crawl
       Anemone.crawl(url) do |anemone|
         anemone.on_every_page do |page|
-          local_path = File.join(File.dirname(__FILE__), "output", page.local_uri)
+          local_path = File.join(@options[:output], page.local_uri)
 
           File.open(local_path, "wb") do |file|
             file << page.local_body

@@ -27,27 +27,27 @@ module Staticfy
         links = []
 
         # follow links
-        doc.search("//a[@href]").each do |a|
-          u = a['href']
-          next if u.nil? or u.empty?
-          abs = to_absolute(URI(u)) rescue next
-          links << abs if in_domain?(abs)
+        attribute_iterator(doc, "a", "href") do |abs, tag|
+          links << abs
         end
 
         # fetch scripts
-        doc.search("//script[@src]").each do |s|
-          src = s["src"]
-          next if src.nil? or src.empty?
-          abs = to_absolute(URI(src)) rescue next
-          links << abs if in_domain?(abs)
+        attribute_iterator(doc, "script", "src") do |abs, tag|
+          links << abs
         end
 
         # follow styles
-        doc.search("//link[@href]").each do |a|
-          u = a['href']
-          next if u.nil? or u.empty?
-          abs = to_absolute(URI(u)) rescue next
-          links << abs if in_domain?(abs)
+        attribute_iterator(doc, "link", "href") do |abs, tag|
+          links << abs
+        end
+
+        # images
+        attribute_iterator(doc, "img", "src") do |abs, tag|
+          links << abs
+        end
+
+        attribute_iterator(doc, "input", "src") do |abs, tag|
+          links << abs
         end
 
         links.uniq!
@@ -55,7 +55,34 @@ module Staticfy
       end
 
       def local_body
-        body
+        return body unless doc
+
+        html = doc.dup
+
+        update_links(html, "a", "href")
+        update_links(html, "script", "src")
+        update_links(html, "link", "href")
+        update_links(html, "img", "src")
+        update_links(html, "input", "src")
+
+        html.to_s
+      end
+
+      def attribute_iterator(document, tag, attr)
+        document.search("//#{tag}[@#{attr}]").each do |tag|
+          a = tag[attr]
+          next if a.nil? or a.empty?
+          abs = to_absolute(URI(a)) rescue next
+          if in_domain?(abs)
+            yield abs, tag
+          end
+        end
+      end
+
+      def update_links(document, tag, attr)
+        attribute_iterator(document, tag, attr) do |abs, tag|
+          tag[attr] = Staticfy::Handlers.local_uri(abs)
+        end
       end
     end
   end
