@@ -20,3 +20,5 @@ Currently staticfy only accepts simple crawling, more complex things will be ena
 For now you need to create a folder called `output` and run:
 
     staticfy http://mysite.com
+
+Them the generated files will be placed on `output` folder.
