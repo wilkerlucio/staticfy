@@ -22,9 +22,3 @@ For now you need to create a folder called `output` and run:
     staticfy http://mysite.com
 
 Them the generated files will be placed on `output` folder.
-
-``` ruby
-def test
-  code
-end
-```
